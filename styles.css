@@ -1,0 +1,184 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1a1a1a;
+    color: #ffffff;
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* Control Panel */
+.controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.controls:hover {
+    transform: translateY(0);
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Buttons */
+.btn {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+    background: #555;
+}
+
+.btn:disabled {
+    background: #222;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.btn.primary {
+    background: #007acc;
+}
+
+.btn.primary:hover {
+    background: #005999;
+}
+
+.btn.playing {
+    background: #dc3545;
+}
+
+.btn.playing:hover {
+    background: #c82333;
+}
+
+/* Form elements */
+.select {
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.checkbox {
+    margin-right: 5px;
+}
+
+label {
+    font-size: 14px;
+    color: #ccc;
+}
+
+/* Photo info */
+.photo-info {
+    margin-left: auto;
+    font-size: 14px;
+    color: #ccc;
+}
+
+/* Photo container */
+.photo-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+/* Welcome message */
+.welcome-message {
+    text-align: center;
+    color: #ccc;
+}
+
+.welcome-message h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #007acc;
+}
+
+.welcome-message p {
+    font-size: 1.2rem;
+}
+
+/* Photo display */
+.photo {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: opacity 0.5s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.photo.fade-out {
+    opacity: 0;
+}
+
+/* Loading message */
+.loading-message {
+    color: #ccc;
+    font-size: 1.2rem;
+}
+
+/* Auto-hide controls */
+body.auto-hide .controls {
+    transform: translateY(-100%);
+}
+
+body.auto-hide .controls:hover {
+    transform: translateY(0);
+}
+
+/* Fullscreen styles */
+body.fullscreen .controls {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .controls {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px;
+    }
+    
+    .control-group {
+        gap: 5px;
+    }
+    
+    .btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}

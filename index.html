@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tPhotowall - Photo Slideshow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Control Panel -->
+    <div id="controls" class="controls">
+        <button id="selectFolderBtn" class="btn primary">Select Photo Folder</button>
+        <div class="control-group">
+            <button id="playPauseBtn" class="btn" disabled>Play</button>
+            <button id="prevBtn" class="btn" disabled>Previous</button>
+            <button id="nextBtn" class="btn" disabled>Next</button>
+        </div>
+        <div class="control-group">
+            <label for="intervalSelect">Interval:</label>
+            <select id="intervalSelect" class="select">
+                <option value="3000">3 seconds</option>
+                <option value="5000" selected>5 seconds</option>
+                <option value="10000">10 seconds</option>
+                <option value="30000">30 seconds</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <input type="checkbox" id="randomOrder" class="checkbox">
+            <label for="randomOrder">Random Order</label>
+        </div>
+        <div id="photoInfo" class="photo-info">
+            <span id="currentPhotoIndex">0</span> of <span id="totalPhotos">0</span> photos
+        </div>
+    </div>
+
+    <!-- Main Photo Display -->
+    <div id="photoContainer" class="photo-container">
+        <div id="welcomeMessage" class="welcome-message">
+            <h1>tPhotowall</h1>
+            <p>Select a folder to start your slideshow</p>
+        </div>
+        <img id="currentPhoto" class="photo" style="display: none;" alt="Current photo">
+        <div id="loadingMessage" class="loading-message" style="display: none;">
+            Loading photos...
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
