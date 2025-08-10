@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, powerSaveBlocker } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const chokidar = require('chokidar');
@@ -18,6 +18,7 @@ let currentPhotoFolder = '';
 let libheif = null;
 let isHeicSupported = false;
 let config = {};
+let powerSaveBlockerId = null;
 
 const CONFIG_FILE = path.join(__dirname, 'config.json');
 
@@ -193,10 +194,57 @@ ipcMain.handle('is-heic-supported', async () => {
 
 ipcMain.handle('get-startup-folder', async () => {
     if (config && config.startupFolder && fs.existsSync(config.startupFolder)) {
+        watchFolder(config.startupFolder);
         return config.startupFolder;
     }
     return undefined;
 });
+
+ipcMain.handle('start-power-save-blocking', async () => {
+    startPowerSaveBlocking();
+    return { success: true, message: 'Power save blocking started' };
+});
+
+ipcMain.handle('stop-power-save-blocking', async () => {
+    stopPowerSaveBlocking();
+    return { success: true, message: 'Power save blocking stopped' };
+});
+
+function startPowerSaveBlocking() {
+    if (powerSaveBlockerId === null) {
+        try {
+            // Prevent the system from entering lower-power mode (sleep)
+            powerSaveBlockerId = powerSaveBlocker.start('prevent-display-sleep');
+            console.log('Power save blocking started, ID:', powerSaveBlockerId);
+            
+            if (powerSaveBlocker.isStarted(powerSaveBlockerId)) {
+                console.log('Power save blocking is active - system will not sleep');
+            } else {
+                console.warn('Failed to start power save blocking');
+                powerSaveBlockerId = null;
+            }
+        } catch (error) {
+            console.error('Error starting power save blocking:', error);
+            powerSaveBlockerId = null;
+        }
+    } else {
+        console.log('Power save blocking already active, ID:', powerSaveBlockerId);
+    }
+}
+
+function stopPowerSaveBlocking() {
+    if (powerSaveBlockerId !== null) {
+        try {
+            powerSaveBlocker.stop(powerSaveBlockerId);
+            console.log('Power save blocking stopped, ID:', powerSaveBlockerId);
+            powerSaveBlockerId = null;
+        } catch (error) {
+            console.error('Error stopping power save blocking:', error);
+        }
+    } else {
+        console.log('Power save blocking was not active');
+    }
+}
 
 app.whenReady().then(() => {
     createWindow();
@@ -214,6 +262,7 @@ function cleanup() {
         folderWatcher = null;
     }
     currentPhotoFolder = '';
+    stopPowerSaveBlocking();
 }
 
 app.on('window-all-closed', () => {

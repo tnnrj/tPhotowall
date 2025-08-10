@@ -46,10 +46,10 @@ class PhotoCache {
         for (const curFile of this.queue) {
             if (!newPaths.has(curFile.path)) {
                 if (curFile.url.startsWith('blob:')) {
-                    console.log('PhotoCache: Revoking blob URL for deleted photo:', path, cached.url);
-                    URL.revokeObjectURL(cached.url);
+                    console.log('PhotoCache: Revoking blob URL for deleted photo:', curFile.path, curFile.url);
+                    URL.revokeObjectURL(curFile.url);
                 }
-                console.log('PhotoCache: Removed from cache:', path);
+                console.log('PhotoCache: Removed from cache:', curFile.path);
             } else {
                 newQ.push(curFile);
             }
@@ -61,6 +61,7 @@ class PhotoCache {
             // load in background without blocking
             this.preloadPhotos(newFiles);
         }
+        this.queue = newQ;
     }
 
     async preloadPhotos(photoPaths) {
@@ -362,15 +363,22 @@ class PhotoSlideshow {
     displayCachedPhoto(imageUrl) {
         console.log('Displaying cached photo:', imageUrl);
 
-        // Use a new Image element to test if the URL is valid before setting it
+        const currentImg = this.imgs[this.currentIndex];
+        
         const testImg = new Image();
         testImg.onload = () => {
             console.log('Cached image loaded successfully');
-            this.imgs[this.currentIndex].src = imageUrl;
-            this.imgs[this.currentIndex].style.display = 'block';
             this.welcomeMessage.style.display = 'none';
-            this.imgs[this.currentIndex].classList.remove('fade-out');
-            this.currentIndex = (this.currentIndex + 1) % CONSTANTS.VISIBLE_PHOTOS;
+            
+            currentImg.style.opacity = '0';
+            
+            setTimeout(() => {
+                currentImg.src = imageUrl;
+                currentImg.style.display = 'block';
+                currentImg.style.opacity = '1';
+                
+                this.currentIndex = (this.currentIndex + 1) % CONSTANTS.VISIBLE_PHOTOS;
+            }, 600);
         };
 
         testImg.onerror = (error) => {
@@ -389,6 +397,11 @@ class PhotoSlideshow {
     async nextPhoto() {
         const nextPhotoUrl = this.photoCache.getNextPhoto();
         console.log('Updating photo display for:', this.currentIndex, nextPhotoUrl);
+
+        if (!nextPhotoUrl) {
+            console.warn('No more photos available');
+            return;
+        }
 
         try {
             this.displayCachedPhoto(nextPhotoUrl);
@@ -412,6 +425,8 @@ class PhotoSlideshow {
         this.playPauseBtn.textContent = 'Pause';
         this.playPauseBtn.classList.add('playing');
 
+        this.startPowerSaveBlocking();
+
         const interval = parseInt(this.intervalSelect.value);
         this.slideInterval = setInterval(async () => {
             await this.nextPhoto();
@@ -428,6 +443,8 @@ class PhotoSlideshow {
         this.isPlaying = false;
         this.playPauseBtn.textContent = 'Play';
         this.playPauseBtn.classList.remove('playing');
+
+        this.stopPowerSaveBlocking();
 
         if (this.slideInterval) {
             clearInterval(this.slideInterval);
@@ -484,6 +501,28 @@ class PhotoSlideshow {
                     this.selectFolder();
                 }
                 break;
+        }
+    }
+
+    async startPowerSaveBlocking() {
+        try {
+            const result = await window.electronAPI.startPowerSaveBlocking();
+            if (result.success) {
+                console.log('Power save blocking started:', result.message);
+            }
+        } catch (error) {
+            console.warn('Failed to start power save blocking:', error);
+        }
+    }
+
+    async stopPowerSaveBlocking() {
+        try {
+            const result = await window.electronAPI.stopPowerSaveBlocking();
+            if (result.success) {
+                console.log('Power save blocking stopped:', result.message);
+            }
+        } catch (error) {
+            console.warn('Failed to stop power save blocking:', error);
         }
     }
 }
