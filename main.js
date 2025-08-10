@@ -11,15 +11,13 @@ const WINDOW_CONFIG = {
 };
 
 const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.heic', '.heif'];
-const HEIC_EXTENSIONS = ['.heic', '.heif'];
-const HEIC_QUALITY = 0.8;
 
 let mainWindow;
 let folderWatcher;
 let currentPhotoFolder = '';
 let libheif = null;
 let isHeicSupported = false;
-let config = null;
+let config = {};
 
 const CONFIG_FILE = path.join(__dirname, 'config.json');
 
@@ -30,12 +28,10 @@ function loadConfig() {
             config = JSON.parse(configData);
             console.log('Config loaded:', config);
         } else {
-            config = { startupFolder: '' };
             console.log('No config file found, using defaults');
         }
     } catch (error) {
         console.error('Failed to load config:', error);
-        config = { startupFolder: '' };
     }
 }
 
@@ -199,7 +195,7 @@ ipcMain.handle('get-startup-folder', async () => {
     if (config && config.startupFolder && fs.existsSync(config.startupFolder)) {
         return config.startupFolder;
     }
-    return null;
+    return undefined;
 });
 
 app.whenReady().then(() => {

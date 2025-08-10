@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tPhotowall - Photo Slideshow</title>
+    <title>tPhotowall</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <!-- Control Panel -->
     <div id="controls" class="controls">
         <button id="selectFolderBtn" class="btn primary">Select Photo Folder</button>
         <div class="control-group">
             <button id="playPauseBtn" class="btn" disabled>Play</button>
-            <button id="prevBtn" class="btn" disabled>Previous</button>
             <button id="nextBtn" class="btn" disabled>Next</button>
         </div>
         <div class="control-group">
@@ -24,22 +24,45 @@
                 <option value="30000">30 seconds</option>
             </select>
         </div>
-        <div class="control-group">
-            <input type="checkbox" id="randomOrder" class="checkbox">
-            <label for="randomOrder">Random Order</label>
-        </div>
-        <div id="photoInfo" class="photo-info">
-            <span id="currentPhotoIndex">0</span> of <span id="totalPhotos">0</span> photos
-        </div>
     </div>
 
-    <!-- Main Photo Display -->
     <div id="photoContainer" class="photo-container">
         <div id="welcomeMessage" class="welcome-message">
             <h1>tPhotowall</h1>
             <p>Select a folder to start your slideshow</p>
         </div>
-        <img id="currentPhoto" class="photo" style="display: none;" alt="Current photo">
+        <div id="photoGrid" class="photo-grid" style="display: none;">
+            <div class="col">
+                <div class="row">
+                    <div class="photo-wrapper w50">
+                        <img id="photo1" class="photo" alt="Photo 1">
+                    </div>
+                    <div class="photo-wrapper w50">
+                        <img id="photo2" class="photo" alt="Photo 2">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="photo-wrapper">
+                        <img id="photo3" class="photo" alt="Photo 3">
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row">
+                    <div class="photo-wrapper">
+                        <img id="photo4" class="photo" alt="Photo 4">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="photo-wrapper w50">
+                        <img id="photo5" class="photo" alt="Photo 5">
+                    </div>
+                    <div class="photo-wrapper w50">
+                        <img id="photo6" class="photo" alt="Photo 6">
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="loadingMessage" class="loading-message" style="display: none;">
             Loading photos...
         </div>
