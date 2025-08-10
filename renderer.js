@@ -259,7 +259,9 @@ class PhotoSlideshow {
                     this.currentIndex = 0;
 
                     await this.updatePhotoList(photos);
-                    await this.nextPhoto();
+                    for (let i = 0; i < CONSTANTS.VISIBLE_PHOTOS; i++) {
+                        await this.nextPhoto();
+                    }
 
                     console.log(`Auto-loaded ${photos.length} photos from startup folder`);
                     console.log('Cache stats:', this.photoCache.getCacheStats());
@@ -333,7 +335,9 @@ class PhotoSlideshow {
             const result = await window.electronAPI.selectFolder();
             this.enableControls();
             await this.updatePhotoList(result.photos);
-            await this.nextPhoto();
+            for (let i = 0; i < CONSTANTS.VISIBLE_PHOTOS; i++) {
+                await this.nextPhoto();
+            }
         } catch (error) {
             console.error('Error selecting folder:', error);
             alert('Error selecting folder. Please try again.');
