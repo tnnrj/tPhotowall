@@ -10,4 +10,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getStartupFolder: () => ipcRenderer.invoke('get-startup-folder'),
     startPowerSaveBlocking: () => ipcRenderer.invoke('start-power-save-blocking'),
     stopPowerSaveBlocking: () => ipcRenderer.invoke('stop-power-save-blocking'),
+    getQRCodePath: () => ipcRenderer.invoke('get-qr-code-path'),
 });

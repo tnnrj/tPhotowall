@@ -236,6 +236,7 @@ class PhotoSlideshow {
         this.bindEvents();
         this.setupAutoHide();
         this.initializeCache();
+        this.initializeQRCode();
         this.loadStartupFolder();
     }
 
@@ -244,6 +245,18 @@ class PhotoSlideshow {
             await this.photoCache.initialize();
         } catch (error) {
             console.error('Failed to initialize photo cache:', error);
+        }
+    }
+
+    async initializeQRCode() {
+        try {
+            const qrCodePath = await window.electronAPI.getQRCodePath();
+            this.qrCodeImage.src = `file:///${qrCodePath.replace(/\\/g, '/')}`;
+            this.qrCodePanel.style.display = 'block';
+            console.log('QR Code panel displayed successfully');
+        } catch (error) {
+            console.error('Error checking QR code file:', error);
+            this.qrCodePanel.style.display = 'none';
         }
     }
 
@@ -263,6 +276,7 @@ class PhotoSlideshow {
                     for (let i = 0; i < CONSTANTS.VISIBLE_PHOTOS; i++) {
                         await this.nextPhoto();
                     }
+                    this.enableControls();
 
                     console.log(`Auto-loaded ${photos.length} photos from startup folder`);
                     console.log('Cache stats:', this.photoCache.getCacheStats());
@@ -296,6 +310,9 @@ class PhotoSlideshow {
             document.getElementById('photo5'),
             document.getElementById('photo6'),
         ];
+
+        this.qrCodePanel = document.getElementById('qrCodePanel');
+        this.qrCodeImage = document.getElementById('qrCodeImage');
     }
 
     bindEvents() {

@@ -210,6 +210,17 @@ ipcMain.handle('stop-power-save-blocking', async () => {
     return { success: true, message: 'Power save blocking stopped' };
 });
 
+ipcMain.handle('get-qr-code-path', async () => {
+    if (config?.qrCode) {
+        if (fs.existsSync(config.qrCode)) {
+            return config.qrCode;
+        } else {
+            console.error('QR code file does not exist:', config.qrCode);
+        }
+    }
+    return undefined;
+});
+
 function startPowerSaveBlocking() {
     if (powerSaveBlockerId === null) {
         try {

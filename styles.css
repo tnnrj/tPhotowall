@@ -184,6 +184,50 @@ body.fullscreen .controls {
     background: rgba(0, 0, 0, 0.9);
 }
 
+.qr-code-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.qr-code-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.qr-code-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.qr-code-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 6px;
+    object-fit: contain;
+    background: white;
+    padding: 6px;
+}
+
+.qr-code-label {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    max-width: 80px;
+    line-height: 1.2;
+}
+
 @media (max-width: 768px) {
     .controls {
         flex-wrap: wrap;
