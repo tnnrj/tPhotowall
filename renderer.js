@@ -5,7 +5,8 @@ const CONSTANTS = {
     MAX_RETRY_ATTEMPTS: 3,
     CONVERSION_TIMEOUT: 30000,
     CACHE_SIZE_LIMIT: 200,
-    VISIBLE_PHOTOS: 6
+    VISIBLE_PHOTOS: 6,
+    FADE_DELAY: 600,
 };
 
 class PhotoCache {
@@ -28,9 +29,26 @@ class PhotoCache {
     getNextPhoto() {
         const nextPhoto = this.queue.shift();
         if (nextPhoto) {
-            this.queue.push(nextPhoto);
+            this.reinsertPhoto(nextPhoto);
         }
         return nextPhoto?.url;
+    }
+
+    reinsertPhoto(photo) {
+        // we don't want to show the same photo twice, unless we don't have enough photos
+        if (this.queue.length < CONSTANTS.VISIBLE_PHOTOS) {
+            this.queue.push(photo);
+            return;
+        }
+        
+        const minIndex = CONSTANTS.VISIBLE_PHOTOS;
+        const maxIndex = this.queue.length;
+        
+        // reinsert at a random index
+        const randomIndex = Math.floor(Math.random() * (maxIndex - minIndex + 1)) + minIndex;
+        this.queue.splice(randomIndex, 0, photo);
+        
+        console.log(`PhotoCache: Reinserted photo at index ${randomIndex} (${minIndex}-${maxIndex})`);
     }
 
     isHeicFile(filePath) {
@@ -84,7 +102,7 @@ class PhotoCache {
         try {
             const url = await loadPromise;
             console.log('PhotoCache: Finished loading:', photoPath, 'URL:', url);
-            this.queue.unshift({ path: photoPath, url: url });
+            this.queue.unshift({ path: photoPath, url: url, timestamp: Date.now() });
             return url;
         } finally {
             this.loadingPromises.delete(photoPath);
@@ -116,7 +134,7 @@ class PhotoCache {
     async loadRegularImage(photoPath) {
         return new Promise((resolve, reject) => {
             try {
-                // Properly encode the file path for URL usage
+                // properly encode the file path for URL usage
                 const normalizedPath = photoPath.replace(/\\/g, '/');
                 const encodedPath = normalizedPath.split('/').map(encodeURIComponent).join('/');
                 const fileUrl = `file:///${encodedPath}`;
@@ -144,7 +162,7 @@ class PhotoCache {
 
     async loadHEICImage(photoPath) {
         try {
-            // Properly encode the file path for URL usage
+            // properly encode the file path for URL usage
             const normalizedPath = photoPath.replace(/\\/g, '/');
             const encodedPath = normalizedPath.split('/').map(encodeURIComponent).join('/');
             const fileUrl = `file:///${encodedPath}`;
@@ -205,7 +223,7 @@ class PhotoCache {
 
     clear() {
         console.log('PhotoCache: Clearing entire cache');
-        // Clean up all blob URLs
+        // clean up all assigned blob URLs
         for (const { path, url } of this.queue) {
             if (url.startsWith('blob:')) {
                 console.log('PhotoCache: Clear - revoking blob URL:', path, url);
@@ -395,7 +413,7 @@ class PhotoSlideshow {
                 currentImg.style.opacity = '1';
                 
                 this.currentIndex = (this.currentIndex + 1) % CONSTANTS.VISIBLE_PHOTOS;
-            }, 600);
+            }, CONSTANTS.FADE_DELAY);
         };
 
         testImg.onerror = (error) => {
