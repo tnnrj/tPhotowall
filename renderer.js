@@ -270,10 +270,12 @@ class PhotoSlideshow {
                 const photos = await window.electronAPI.getPhotos(startupFolder);
                 if (photos && photos.length > 0) {
                     this.currentFolder = startupFolder;
-                    this.currentIndex = 0;
 
                     await this.updatePhotoList(photos);
+
+                    this.showLoading(false);
                     for (let i = 0; i < CONSTANTS.VISIBLE_PHOTOS; i++) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                         await this.nextPhoto();
                     }
                     this.enableControls();
@@ -283,8 +285,6 @@ class PhotoSlideshow {
                 } else {
                     console.warn('Startup folder exists but contains no photos:', startupFolder);
                 }
-
-                this.showLoading(false);
             }
         } catch (error) {
             console.error('Failed to load startup folder:', error);
